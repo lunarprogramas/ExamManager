@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ExamManager (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ExamManager (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
