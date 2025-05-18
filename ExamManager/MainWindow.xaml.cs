@@ -18,6 +18,11 @@ using Microsoft.UI.Windowing;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Automation.Peers;
+using ExamManager.Modules.User;
+using ExamManager.Modules.Util;
+using System.Timers;
+using System.Threading.Tasks;
+using System.Threading;
 
 // The main window for Exam Manager
 
@@ -26,6 +31,12 @@ namespace ExamManager
     public sealed partial class MainWindow : Window
     {
         private AppWindow _appWindow;
+        private User32Dll _user32dll;
+        private SQLService _sqlService;
+
+        private string username;
+        private bool signedIn;
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -40,12 +51,97 @@ namespace ExamManager
             Debug.WriteLine("Successfully started window object");
             AppWindow.SetIcon(Win32Interop.GetIconIdFromIcon(icon));
 
+            // Set tray icon
+            _user32dll = new User32Dll();
+            _user32dll.InitializeTrayIcon(this, icon);
+
+            this.Closed += closeWindow;
+
+            // Setup SQL stuff
+            _sqlService = new SQLService();
+            _sqlService.Initialize();
+
+            // Setup testing user
+            if (!_sqlService.CheckTestUser("Test"))
+            {
+                _sqlService.AddUserToDB("Test", "Test", "Admin");
+            }
+
+            this.signedIn = false;
         }
 
         private void SignInShow(object sender, RoutedEventArgs e)
         {
             this.SignedOutPage.Visibility = Visibility.Collapsed;
             this.SignedInPage.Visibility = Visibility.Visible;
+            this.startFancySignedInPageCountdown();
+        }
+
+        private void signUserIn(bool state) // adjusts the visibility of the signin page and homepage
+        {
+            if (state) {
+                this.SignedInPage.Visibility = Visibility.Collapsed;
+                this.Homepage.Visibility = Visibility.Visible;
+                this.UserName.Text = $"Welcome, {this.username}!";
+            } else
+            {
+                this.SignedOutPage.Visibility = Visibility.Visible;
+                this.Homepage.Visibility = Visibility.Collapsed;
+                this.UserName.Text = "OnceIWasTwentyYearsOld";
+                this.signedIn = false;
+                this.user.Text = "";
+                this.password.Text = "";
+            }
+        }
+
+        private async void startFancySignedInPageCountdown()
+        {
+            while (!signedIn)
+            {
+                await Task.Delay(30000);
+                
+                if (!signedIn)
+                {
+                    this.SignedInPage.Visibility = Visibility.Collapsed;
+                    this.SignedOutPage.Visibility = Visibility.Visible;
+                    break;
+                } else
+                {
+                    break;
+                }
+            }
+        }
+
+        private void SignOut(object sender, RoutedEventArgs e)
+        {
+            this.signUserIn(false);
+        }
+
+        private void CheckCredentials(object sender, RoutedEventArgs e)
+        {
+            string user = this.user.Text;
+            string password = this.password.Text;
+
+            if (user == null || password == null)
+            {
+                return;
+            }
+
+            if (_sqlService.CheckUserCredentials(user, password))
+            {
+                Debug.WriteLine("Signed in!");
+                this.username = user;
+                this.signedIn = true;
+                this.signUserIn(true);
+            } else
+            {
+                Debug.WriteLine("Invalid credentials");
+            }
+        }
+
+        private void closeWindow(object sender, WindowEventArgs e)
+        {
+            _user32dll.RemoveTrayIcon();
         }
 
         private const int IDI_APPLICATION = 32512;

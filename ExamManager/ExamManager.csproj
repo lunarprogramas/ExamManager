@@ -37,6 +37,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250401001" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
