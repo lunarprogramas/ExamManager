@@ -36,6 +36,7 @@ namespace ExamManager
 
         private string username;
         private bool signedIn;
+        private object currentPage;
 
         public MainWindow()
         {
@@ -82,7 +83,9 @@ namespace ExamManager
             if (state) {
                 this.SignedInPage.Visibility = Visibility.Collapsed;
                 this.Homepage.Visibility = Visibility.Visible;
+                this.WelcomePage.Visibility = Visibility.Visible;
                 this.UserName.Text = $"Welcome, {this.username}!";
+                this.currentPage = this.WelcomePage;
             } else
             {
                 this.SignedOutPage.Visibility = Visibility.Visible;
@@ -91,6 +94,7 @@ namespace ExamManager
                 this.signedIn = false;
                 this.user.Text = "";
                 this.password.Text = "";
+                this.currentPage = this.SignedOutPage;
             }
         }
 
@@ -115,6 +119,34 @@ namespace ExamManager
         private void SignOut(object sender, RoutedEventArgs e)
         {
             this.signUserIn(false);
+        }
+
+        private void ShowCandidates(object sender, RoutedEventArgs e)
+        {
+            ((StackPanel)this.currentPage).Visibility = Visibility.Collapsed;
+            this.CandidateManagement.Visibility = Visibility.Visible;
+            this.currentPage = this.CandidateManagement;
+        }
+
+        private void ReturnToHomepage(object sender, RoutedEventArgs e)
+        {
+            ((StackPanel)this.currentPage).Visibility = Visibility.Collapsed;
+            this.WelcomePage.Visibility = Visibility.Visible;
+            this.currentPage = this.WelcomePage;
+        }
+
+        private void GetCandidates(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(_sqlService.GetCandidates("2008"));
+        }
+
+        private void AddCandidate(object sender, RoutedEventArgs e)
+        {
+            string name = this.candidateName.Text;
+            string number = this.candidateNumber.Text;
+            string ageGroup = this.candidateAgeGroup.Text;
+
+            _sqlService.AddCandidate(name, number, ageGroup);
         }
 
         private void CheckCredentials(object sender, RoutedEventArgs e)

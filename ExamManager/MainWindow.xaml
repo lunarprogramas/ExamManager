@@ -67,17 +67,29 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <Button Grid.Column="0" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Exam Hall</Button>
-                    <Button Grid.Column="1" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Students</Button>
+                    <Button Click="ShowCandidates" Grid.Column="1" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Students</Button>
                     <Button Grid.Column="2" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Examiners</Button>
-                    <Button Click="SignOut" Grid.Column="3" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Sign out</Button>
+                    <Button Click="ReturnToHomepage" Grid.Column="3" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Homepage</Button>
+                    <Button Click="SignOut" Grid.Column="4" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Sign out</Button>
                 </Grid>
             </StackPanel>
 
-            <StackPanel Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Name="WelcomePage" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Name="UserName" HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">Welcome, OnlyTwentyCharacters!</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
+            </StackPanel>
+
+            <StackPanel Name="CandidateManagement" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBox Name="candidateName" Width="300" TextAlignment="Center" PlaceholderText="Student Name"></TextBox>
+                <TextBox Name="candidateNumber" TextAlignment="Center" PlaceholderText="Candidate Number"></TextBox>
+                <TextBox Name="candidateAgeGroup" TextAlignment="Center" PlaceholderText="Age Group"></TextBox>
+                <Button Click="AddCandidate" HorizontalAlignment="Center">Add Student</Button>
+                <Button Click="GetCandidates" HorizontalAlignment="Center">List students</Button>
+                <TextBlock TextAlignment="Center">Student list here</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
             </StackPanel>
         </Grid>
