@@ -134,7 +134,7 @@ namespace ExamManager.Modules.Util
             }
         }
 
-        public object GetCandidates(string ageGroup) // this needs fixing as it like doesnt work at all
+        public object GetCandidates(string ageGroup) // now works :tada:
         {
             var candidates = new List<(string StudentName, string CandidateNumber, string AgeGroup)>();
 
@@ -152,17 +152,22 @@ namespace ExamManager.Modules.Util
                     {
                         while (reader.Read())
                         {
-                            Debug.WriteLine(reader);
                             var studentName = reader.GetString(0);
                             var candidateNumber = reader.GetString(1);
                             var group = reader.GetString(2);
 
-                            Debug.WriteLine("a", studentName, candidateNumber, group);
+                            var candidate = (studentName, candidateNumber, group);
 
-                            candidates.Add((studentName, candidateNumber, group));
+                            if (!candidates.Contains(candidate))
+                            {
+                                candidates.Add(candidate);
+                                Debug.WriteLine(studentName);
+                                Debug.WriteLine(candidateNumber);
+                                Debug.WriteLine(group);
+                            }
                         }
 
-                        return candidates.ToArray();
+                        return candidates;
                     }
                 }
             }
