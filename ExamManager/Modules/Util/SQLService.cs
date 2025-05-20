@@ -8,6 +8,8 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using Windows.System;
+using Microsoft.UI.Xaml.Controls;
+using System.Xml.Linq;
 
 // Initializes the SQL Database stuff that god knows what it actually does in the background
 
@@ -17,6 +19,12 @@ namespace ExamManager.Modules.Util
     {
         string connectionString = @"Data Source=C:\Users\janko\source\repos\ExamManager\ExamManager\users1.db;Version=3;";
 
+        public class Candidate
+        {
+            public string name { get; set; }
+            public string candidateNumber { get; set; }
+            public string group { get; set; }
+        }
         public void Initialize()
         {;
 
@@ -113,30 +121,41 @@ namespace ExamManager.Modules.Util
             }
         }
 
-        public bool CheckUserCredentials(string username, string password)
+        public object CheckUserCredentials(string username, string password)
         {
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
-                string insertQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username AND Password = @password;";
+                string query = "SELECT UserName, Password, UserType FROM Users WHERE Username = @username AND Password = @password;";
 
-                using (var command = new SQLiteCommand(insertQuery, connection))
+                using (var command = new SQLiteCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", username);
                     command.Parameters.AddWithValue("@password", password);
 
-                    long count = (long)command.ExecuteScalar();
-                    Debug.WriteLine($"Found {count} matching user(s).");
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var usr = reader.GetString(0);
+                            var pswrd = reader.GetString(1);
+                            var usrLevel = reader.GetString(2);
 
-                    return count > 0;
+                            return (
+                                isUser: true, Level: int.Parse(usrLevel)
+                                );
+                        }
+                    }
+
+                    return (isUser: false, Level: 0);
                 }
             }
         }
 
         public object GetCandidates(string ageGroup) // now works :tada:
         {
-            var candidates = new List<(string StudentName, string CandidateNumber, string AgeGroup)>();
+            var candidates = new HashSet<(string StudentName, string CandidateNumber, string AgeGroup)>();
 
             using (var connection = new SQLiteConnection(connectionString))
             {
@@ -161,13 +180,65 @@ namespace ExamManager.Modules.Util
                             if (!candidates.Contains(candidate))
                             {
                                 candidates.Add(candidate);
-                                Debug.WriteLine(studentName);
-                                Debug.WriteLine(candidateNumber);
-                                Debug.WriteLine(group);
                             }
                         }
 
                         return candidates;
+                    }
+                }
+            }
+        }
+
+        public object GetCandidateByNameAndYear(string name, string age)
+        {
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT StudentName, CandidateNumber, AgeGroup FROM Students WHERE StudentName = @name AND AgeGroup = @ageGroup";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@name", name);
+                    command.Parameters.AddWithValue("@ageGroup", age);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var studentName = reader.GetString(0);
+                            var candidateNumber = reader.GetString(1);
+                            var group = reader.GetString(2);
+
+                            return (
+                                name: studentName, number: candidateNumber, year: group);
+                        }
+                    }
+
+                    return (name: "N/A", number: "N/A", year: "N/A");
+                }
+            }
+        }
+
+        public bool RemoveCandidate(string number)
+        {
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "DELETE FROM Students WHERE CandidateNumber = @number";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@number", number);
+                    var count = command.ExecuteNonQuery();
+
+                    if (count > 0)
+                    {
+                        return true;
+                    } else
+                    {
+                        return false;
                     }
                 }
             }

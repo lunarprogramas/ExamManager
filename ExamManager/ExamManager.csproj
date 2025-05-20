@@ -13,6 +13,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
     <ApplicationManifest>app.manifest</ApplicationManifest>
 	<ApplicationIcon>examManagerv2.ico</ApplicationIcon>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\examManagerv2.ico" />

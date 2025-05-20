@@ -37,6 +37,9 @@
 
         <!-- Background -->
         <Image Source=".\Assets\mountains.jpg" Stretch="Fill"></Image>
+        <Image HorizontalAlignment="Right" VerticalAlignment="Bottom" Opacity="0.7" MaxWidth="150" Source=".\Assets\examManagerv2.png"></Image>
+        <TextBlock Name="DevInfoName1" TextAlignment="Center" FontSize="25" VerticalAlignment="Bottom" Foreground="LightGray" FontWeight="Bold">EXAM MANAGER TESTING ENVIRONMENT</TextBlock>
+        <TextBlock Name="DevInfoName2" TextAlignment="Center" FontSize="25" VerticalAlignment="Top" Foreground="LightGray" FontWeight="Bold">EXAM MANAGER TESTING ENVIRONMENT</TextBlock>
 
         <!-- Signed out page -->
         <StackPanel Name="SignedOutPage" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -61,21 +64,26 @@
 
             <!-- Top Bar -->
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid ColumnSpacing="30" Opacity="1" Background="Transparent" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled">
+                    <Grid ColumnSpacing="30" Opacity="1" Background="Transparent" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Exam Hall</Button>
-                    <Button Click="ShowCandidates" Grid.Column="1" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Students</Button>
-                    <Button Grid.Column="2" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Examiners</Button>
-                    <Button Click="ReturnToHomepage" Grid.Column="3" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Homepage</Button>
-                    <Button Click="SignOut" Grid.Column="4" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Sign out</Button>
-                </Grid>
+                        <Button Grid.Column="0" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Exam Hall</Button>
+                        <Button Click="ShowCandidates" Grid.Column="1" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Candidates</Button>
+                        <Button Grid.Column="2" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Manage Examiners</Button>
+                        <Button Click="ReturnToHomepage" Grid.Column="3" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Homepage</Button>
+                        <Button Click="SignOut" Grid.Column="4" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">Sign out</Button>
+                        <Button Click="About" Grid.Column="5" FontWeight="Bold" FontSize="25" HorizontalAlignment="Center">About Exam Manager</Button>
+                    </Grid>
+                </ScrollViewer>
+
             </StackPanel>
 
             <StackPanel Name="WelcomePage" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -83,13 +91,28 @@
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
             </StackPanel>
 
+            <StackPanel Name="AboutPage" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">About Exam Manager</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">This application was designed and programmed by lunarprogramas.</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">
+                  <Hyperlink NavigateUri="https://github.com/lunarprogramas">
+                      GitHub Profile link
+                  </Hyperlink>
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
+            </StackPanel>
+
             <StackPanel Name="CandidateManagement" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBox Name="candidateName" Width="300" TextAlignment="Center" PlaceholderText="Student Name"></TextBox>
+                <TextBlock HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">Candidate Management</TextBlock>
+                <TextBox Name="candidateName" TextAlignment="Center" PlaceholderText="Student Name"></TextBox>
                 <TextBox Name="candidateNumber" TextAlignment="Center" PlaceholderText="Candidate Number"></TextBox>
                 <TextBox Name="candidateAgeGroup" TextAlignment="Center" PlaceholderText="Age Group"></TextBox>
                 <Button Click="AddCandidate" HorizontalAlignment="Center">Add Student</Button>
                 <Button Click="GetCandidates" HorizontalAlignment="Center">List students</Button>
-                <TextBlock TextAlignment="Center">Student list here</TextBlock>
+                <ListView Name="CandidateList" MaxHeight="300" ScrollViewer.VerticalScrollMode="Enabled">
+                </ListView>
+                <TextBox Name="CandidateInfo" PlaceholderText="No candidate selected." PlaceholderForeground="White" IsReadOnly="True"></TextBox>
+                <Button Click="RemoveCandidate" HorizontalAlignment="Center">Remove Candidate</Button>
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
             </StackPanel>
         </Grid>
