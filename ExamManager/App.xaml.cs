@@ -15,6 +15,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Microsoft.Extensions.Configuration;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -44,6 +45,28 @@ namespace ExamManager
             m_window = new MainWindow();
             m_window.Activate();
         }
+
+        /// .appsettings.json
+        ///  Setups the configuration for the application.
+
+        public static IConfigurationRoot Configuration { get; }
+
+        static App()
+        {
+            try
+            {
+                Configuration = new ConfigurationBuilder()
+                .SetBasePath("C:\\Users\\janko\\Source\\Repos\\lunarprogramas\\ExamManager\\ExamManager") // for now it will be like this until i can get it running properly
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        public static string DatabaseLocation => Configuration["DatabaseLocation"];
 
         private Window m_window;
     }

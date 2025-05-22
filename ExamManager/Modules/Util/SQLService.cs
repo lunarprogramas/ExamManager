@@ -17,7 +17,7 @@ namespace ExamManager.Modules.Util
 {
     internal class SQLService
     {
-        string connectionString = @"Data Source=C:\Users\janko\source\repos\ExamManager\ExamManager\users1.db;Version=3;";
+        string connectionString = @$"Data Source={App.DatabaseLocation};Version=3;";
 
         public class Candidate
         {
@@ -30,6 +30,14 @@ namespace ExamManager.Modules.Util
 
             try
             {
+                Debug.WriteLine(App.DatabaseLocation);
+                if (!File.Exists(App.DatabaseLocation))
+                {
+                    Debug.WriteLine("[SQL Service] Could'nt find the database file, creating a new one.");
+                    File.Create(App.DatabaseLocation);
+                    Debug.WriteLine("[SQL Service] Created database at the specified directory.");
+                }
+
                 using (var connection = new SQLiteConnection(connectionString))
                 {
                     connection.Open();

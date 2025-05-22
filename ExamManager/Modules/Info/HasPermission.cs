@@ -27,7 +27,7 @@ namespace ExamManager.Modules.Info
         {
             if (origin.Contains("Menu"))
             {
-                var configuredLevels = ((int CandidateManagement, int AboutPage))_lockedMenus.GetLockedMenus();
+                var configuredLevels = ((int CandidateManagement, int AboutPage, int ExamHallManagement))_lockedMenus.GetLockedMenus();
 
                 string[] menuSelected = origin.Split(":");
 
@@ -37,6 +37,9 @@ namespace ExamManager.Modules.Info
                 {
                     return true;
                 } else if (key == "AboutPage" && userLevel >= configuredLevels.AboutPage)
+                {
+                    return true;
+                } else if (key == "ExamHallManagement" && userLevel >= configuredLevels.ExamHallManagement)
                 {
                     return true;
                 }

@@ -71,6 +71,11 @@ namespace ExamManager
                 _sqlService.AddUserToDB("Test", "Test", "3");
             }
 
+            if (!_sqlService.CheckTestUser("dev"))
+            {
+                _sqlService.AddUserToDB("dev", "a", "4");
+            }
+
             if (this.developerMode)
             {
                 this.signedIn = true;
@@ -177,6 +182,16 @@ namespace ExamManager
                 ((StackPanel)this.currentPage).Visibility = Visibility.Collapsed;
                 this.AboutPage.Visibility = Visibility.Visible;
                 this.currentPage = this.AboutPage;
+            }
+        }
+
+        private void ShowExamHall(object sender, RoutedEventArgs e)
+        {
+            if (_hasPermission.CheckPermission(this.usrLevel, "Menu:ExamHallManagement"))
+            {
+                ((StackPanel)this.currentPage).Visibility = Visibility.Collapsed;
+                this.ExamHallManagement.Visibility = Visibility.Visible;
+                this.currentPage = this.ExamHallManagement;
             }
         }
 

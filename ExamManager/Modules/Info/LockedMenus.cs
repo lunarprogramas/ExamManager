@@ -12,7 +12,8 @@ namespace ExamManager.Modules.Info
         {
             return (
                 CandidateManagement: 3,
-                AboutPage: 2
+                AboutPage: 2,
+                ExamHallManagement: 4
                 );
         }
     }
