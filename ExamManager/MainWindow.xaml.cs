@@ -195,6 +195,13 @@ namespace ExamManager
             }
         }
 
+        private void setupExamHall() // good luck future myself
+        {
+            var button = new Button();
+            button.AccessKey = "test";
+            this.ExamHallGrid.Children.Add(button);
+        }
+
         private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (this.CandidateList.SelectedValue == null) { return; }

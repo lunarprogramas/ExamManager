@@ -117,12 +117,12 @@
             </StackPanel>
 
             <StackPanel Name="ExamHallManagement" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">Exam Hall Managemnt</TextBlock>
+                <TextBlock HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">Exam Hall Management</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">fyi not finished yet</TextBlock>
                 <Button HorizontalAlignment="Center">Generate seating plan</Button>
                 <Button HorizontalAlignment="Center">View previous seating plans</Button>
                 <TextBox Visibility="Collapsed" PlaceholderText="Examination year" HorizontalAlignment="Center"></TextBox>
-                <Grid ColumnSpacing="10" RowSpacing="10">
+                <Grid Name="ExamHallGrid" ColumnSpacing="10" RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/> 
                         <ColumnDefinition Width="Auto"/>
