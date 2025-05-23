@@ -9,8 +9,8 @@
 
   <Identity
     Name="9105c755-dbf6-467a-a82e-2220534253f7"
-    Publisher="CN=janko"
-    Version="1.0.0.0" />
+    Publisher="CN=lunarprogramas"
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="9105c755-dbf6-467a-a82e-2220534253f7" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
