@@ -161,6 +161,65 @@ namespace ExamManager.Modules.Util
             }
         }
 
+        public object GetUsers() // now works :tada:
+        {
+            var users = new HashSet<(string userName, string userType)>();
+
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT UserName, Password, UserType FROM Users;";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var userName = reader.GetString(0);
+                            var password = reader.GetString(1);
+                            var userType = reader.GetString(2);
+
+                            var user = (userName, userType);
+
+                            if (!users.Contains(user))
+                            {
+                                users.Add(user);
+                            }
+                        }
+
+                        return users;
+                    }
+                }
+            }
+        }
+
+        public bool RemoveUser(string user)
+        {
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "DELETE FROM Users WHERE UserName = @user";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@user", user);
+                    var count = command.ExecuteNonQuery();
+
+                    if (count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
         public object GetCandidates(string ageGroup) // now works :tada:
         {
             var candidates = new HashSet<(string StudentName, string CandidateNumber, string AgeGroup)>();

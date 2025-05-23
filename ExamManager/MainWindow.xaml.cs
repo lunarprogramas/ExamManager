@@ -12,6 +12,7 @@ using ExamManager.Modules.User;
 using ExamManager.Modules.Util;
 using System.Threading.Tasks;
 using ExamManager.Modules.Info;
+using System.Data.Entity.Core.Common.EntitySql;
 
 // The main window for Exam Manager
 
@@ -35,7 +36,7 @@ namespace ExamManager
         private string selectedCandidateYear;
         private string selectedCandidate;
 
-        private bool developerMode = true;
+        private bool developerMode = false;
         private string version = "2";
 
         public MainWindow()
@@ -199,6 +200,60 @@ namespace ExamManager
             }
         }
 
+        private void ShowExaminers(object sender, RoutedEventArgs e)
+        {
+            if (_hasPermission.CheckPermission(this.usrLevel, "Menu:ExaminerManagement"))
+            {
+                ((StackPanel)this.currentPage).Visibility = Visibility.Collapsed;
+                this.ExaminerManagement.Visibility = Visibility.Visible;
+                this.currentPage = this.ExaminerManagement;
+            }
+        }
+
+        private void AddExaminer(object sender, RoutedEventArgs e)
+        {
+            var username = this.examinerName.Text;
+            string password = "ExamManagerExaminer";
+            if (username.Length > 0) {
+                _sqlService.AddUserToDB(username, password, "2");
+                this.GetExaminers(sender, e);
+            }
+        }
+
+        private void RemoveExaminer(object sender, RoutedEventArgs e)
+        {
+            var username = this.ExaminerList.SelectedValue.ToString();
+
+            if (_sqlService.RemoveUser(username)) {
+                this.GetExaminers(sender, e);
+                this.ExaminerInfo.Text = "This examiner was removed";
+            }
+        }
+
+        private void GetExaminers(object sender, RoutedEventArgs e)
+        {
+            var users = (IEnumerable<(string username, string userType)>)_sqlService.GetUsers();
+            this.ExaminerList.Items.Clear();
+            foreach (var user in users) {
+                this.ExaminerList.Items.Add($"{user.username}");
+            }
+
+            this.ExaminerList.SelectionChanged += ExaminerList_SelectionChanged;
+        }
+
+        private void ExaminerList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.ExaminerList.SelectedValue == null) { return; }
+            var users = (IEnumerable<(string username, string userType)>)_sqlService.GetUsers();
+            foreach (var user in users)
+            {
+                if (user.username == this.ExaminerList.SelectedValue.ToString())
+                {
+                    this.ExaminerInfo.Text = $"Username: {user.username} : UserLevel: {user.userType}";
+                }
+            }
+        }
+
         private void SeeSeatingPlan(object sender, RoutedEventArgs e)
         {
             this.SetupExamHall();
@@ -224,7 +279,9 @@ namespace ExamManager
                     var button = new Button();
                     button.Content = $"{seatConfig.RowString}{seatConfig.Seat}";
 
-                    Grid.SetRow(button, seatConfig.RowInt);
+                    Debug.WriteLine($"{seatConfig.RowInt}");
+
+                    Grid.SetColumn(button, seatConfig.RowInt);
                     Grid.SetRow(button, seatConfig.Seat);
 
                     grid.Children.Add(button);
@@ -236,7 +293,7 @@ namespace ExamManager
                 }
             } else
             {
-                var candidates = (IEnumerable<(string name, string number, string group)>)_sqlService.GetCandidates("2008");
+                var candidates = (IEnumerable<(string name, string number, string group)>)_sqlService.GetCandidates(DateTime.Now.Year.ToString());
                 var grid = this.ExamHallGrid;
 
                 grid.Children.Clear();
@@ -248,7 +305,7 @@ namespace ExamManager
                     var button = new Button();
                     button.Content = $"{seatConfig.RowString}{seatConfig.Seat}";
 
-                    Grid.SetRow(button, seatConfig.RowInt);
+                    Grid.SetColumn(button, seatConfig.RowInt);
                     Grid.SetRow(button, seatConfig.Seat);
 
                     grid.Children.Add(button);
@@ -281,8 +338,15 @@ namespace ExamManager
         private void GetCandidates(object sender, RoutedEventArgs e)
         {
             this.CandidateList.Items.Clear();
-            this.selectedCandidateYear = "2008";
-            var candidates = (IEnumerable < (string name, string number, string group) >)_sqlService.GetCandidates("2008");
+            if (this.candidateAgeGroup.Text.Length == 0)
+            {
+                this.selectedCandidateYear = DateTime.Now.Year.ToString();
+            } else
+            {
+                this.selectedCandidateYear = this.candidateAgeGroup.Text;
+            }
+
+            var candidates = (IEnumerable < (string name, string number, string group) >)_sqlService.GetCandidates(this.selectedCandidateYear);
             
             foreach (var (name, number, group) in candidates)
             {

@@ -11,9 +11,10 @@ namespace ExamManager.Modules.Info
         public object GetLockedMenus()
         {
             return (
-                CandidateManagement: 3,
+                CandidateManagement: 2,
                 AboutPage: 2,
-                ExamHallManagement: 4
+                ExamHallManagement: 2,
+                ExaminerManagment: 3
                 );
         }
     }

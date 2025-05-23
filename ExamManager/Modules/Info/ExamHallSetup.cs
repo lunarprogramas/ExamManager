@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 public class ExamRow
 {
@@ -21,7 +22,7 @@ public class ExamHallManager
 {
     private ExamHall hall = new ExamHall
     {
-        MaxStudentsPerRow = 13,
+        MaxStudentsPerRow = 6,
         RowA = new ExamRow { Index = 1, Students = 0 },
         RowB = new ExamRow { Index = 2, Students = 0 },
         RowC = new ExamRow { Index = 3, Students = 0 },
@@ -44,7 +45,7 @@ public class ExamHallManager
             if (rows[i].Students < hall.MaxStudentsPerRow)
             {
                 rows[i].Students++;
-                Console.WriteLine($"Assigned to Row {ConvertIndexToLetter(rows[i].Index)}, Seat #{rows[i].Students}");
+                Debug.WriteLine($"Assigned to Row {ConvertIndexToLetter(rows[i].Index)}, Seat #{rows[i].Students}");
                 return ( RowString: ConvertIndexToLetter(rows[i].Index), RowInt: rows[i].Index, Seat: rows[i].Students );
             }
         }
