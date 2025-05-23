@@ -119,9 +119,9 @@
             <StackPanel Name="ExamHallManagement" Spacing="10" Opacity="0.8" Background="DarkRed" Padding="30" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" FontSize="35" FontWeight="Bold">Exam Hall Management</TextBlock>
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">fyi not finished yet</TextBlock>
-                <Button HorizontalAlignment="Center">Generate seating plan</Button>
+                <Button Click="SeeSeatingPlan" HorizontalAlignment="Center">Generate seating plan</Button>
                 <Button HorizontalAlignment="Center">View previous seating plans</Button>
-                <TextBox Visibility="Collapsed" PlaceholderText="Examination year" HorizontalAlignment="Center"></TextBox>
+                <TextBox Name="GetCandidateYear" Visibility="Collapsed" PlaceholderText="Examination year" HorizontalAlignment="Center"></TextBox>
                 <Grid Name="ExamHallGrid" ColumnSpacing="10" RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/> 
@@ -142,17 +142,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-
-                    <Button Grid.Column="1" Grid.Row="1">A1 : 23412</Button>
-                    <Button Grid.Column="1" Grid.Row="2">A2 : -</Button>
-                    <Button Grid.Column="1" Grid.Row="3">A2 : -</Button>
-                    <Button Grid.Column="1" Grid.Row="4">A2 : -</Button>
-                    <Button Grid.Column="1" Grid.Row="5">A2 : -</Button>
-
-                    <Button Grid.Column="2" Grid.Row="1">A2 : -</Button>
-                    <Button Grid.Column="2" Grid.Row="2">A2 : -</Button>
                 </Grid>
-                <TextBox PlaceholderText="No candidate selected." PlaceholderForeground="White" IsReadOnly="True"></TextBox>
+                <TextBox Name="CandidateInfoExam" PlaceholderText="No candidate selected." PlaceholderForeground="White" IsReadOnly="True"></TextBox>
                 <TextBlock HorizontalAlignment="Center" FontSize="15" FontWeight="Thin">Exam Manager ©️ 2025</TextBlock>
             </StackPanel>
         </Grid>

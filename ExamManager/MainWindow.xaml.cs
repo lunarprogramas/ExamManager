@@ -24,6 +24,7 @@ namespace ExamManager
         private User32Dll _user32dll;
         private SQLService _sqlService;
         private HasPermission _hasPermission;
+        private ExamHallManager _examHallLayout;
 
         private string username;
         private int usrLevel;
@@ -34,7 +35,7 @@ namespace ExamManager
         private string selectedCandidateYear;
         private string selectedCandidate;
 
-        private bool developerMode = false;
+        private bool developerMode = true;
         private string version = "2";
 
         public MainWindow()
@@ -98,6 +99,9 @@ namespace ExamManager
             }
 
             this.selectedCandidate = "0";
+
+            // Setup the exam hall stuff
+            _examHallLayout = new ExamHallManager();
         }
 
         private void SignInShow(object sender, RoutedEventArgs e)
@@ -195,11 +199,66 @@ namespace ExamManager
             }
         }
 
-        private void setupExamHall() // good luck future myself
+        private void SeeSeatingPlan(object sender, RoutedEventArgs e)
         {
-            var button = new Button();
-            button.AccessKey = "test";
-            this.ExamHallGrid.Children.Add(button);
+            this.SetupExamHall();
+        }
+
+        private void SetupExamHall() // good luck future myself
+        {
+            string selectedYear = this.GetCandidateYear.Text;
+
+            _examHallLayout.ResetExamHall();
+            
+            if (selectedYear.Length > 0)
+            {
+                var candidates = (IEnumerable<(string name, string number, string group)>)_sqlService.GetCandidates(selectedYear);
+                var grid = this.ExamHallGrid;
+
+                grid.Children.Clear();
+
+                foreach (var (name, number, group) in candidates)
+                {
+                    var seatConfig = ((string RowString, int RowInt, int Seat))_examHallLayout.DetermineCandidateSeat();
+
+                    var button = new Button();
+                    button.Content = $"{seatConfig.RowString}{seatConfig.Seat}";
+
+                    Grid.SetRow(button, seatConfig.RowInt);
+                    Grid.SetRow(button, seatConfig.Seat);
+
+                    grid.Children.Add(button);
+
+                    button.Click += (object sender, RoutedEventArgs e) =>
+                    {
+                        this.CandidateInfoExam.Text = $"Name: {name} Candidate Number: {number}";
+                    };
+                }
+            } else
+            {
+                var candidates = (IEnumerable<(string name, string number, string group)>)_sqlService.GetCandidates("2008");
+                var grid = this.ExamHallGrid;
+
+                grid.Children.Clear();
+
+                foreach (var (name, number, group) in candidates)
+                {
+                    var seatConfig = ((string RowString, int RowInt, int Seat))_examHallLayout.DetermineCandidateSeat();
+
+                    var button = new Button();
+                    button.Content = $"{seatConfig.RowString}{seatConfig.Seat}";
+
+                    Grid.SetRow(button, seatConfig.RowInt);
+                    Grid.SetRow(button, seatConfig.Seat);
+
+                    grid.Children.Add(button);
+
+                    button.Click += (object sender, RoutedEventArgs e) =>
+                    {
+                        this.CandidateInfoExam.Text = $"Name: {name} Candidate Number: {number}";
+                    };
+                }
+            }
         }
 
         private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
