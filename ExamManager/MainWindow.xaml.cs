@@ -1,4 +1,4 @@
-using Microsoft.UI;
+﻿using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -27,6 +27,7 @@ namespace ExamManager
         private HasPermission _hasPermission;
         private ExamHallManager _examHallLayout;
 
+        private IntPtr _hwnd;
         private string username;
         private int usrLevel;
 
@@ -54,10 +55,19 @@ namespace ExamManager
             AppWindow.SetIcon(Win32Interop.GetIconIdFromIcon(icon));
 
             // Set tray icon
+            _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+            HwndSourceHook hook = new HwndSourceHook(WndProc);
+            SetWindowSubclass(_hwnd, hook, 0, IntPtr.Zero);
+
             _user32dll = new User32Dll();
             _user32dll.InitializeTrayIcon(this, icon);
 
-            this.Closed += closeWindow;
+            AppWindow.Closing += (sender, args) =>
+            {
+                args.Cancel = true;
+                this.AppWindow.Hide();
+            };
 
             // Setup SQL stuff
             _sqlService = new SQLService();
@@ -122,6 +132,7 @@ namespace ExamManager
                 this.currentPage = this.WelcomePage;
             } else
             {
+                if (!this.signedIn) { return; }
                 this.SignedOutPage.Visibility = Visibility.Visible;
                 this.Homepage.Visibility = Visibility.Collapsed;
                 this.UserName.Text = "OnceIWasTwentyYearsOld";
@@ -409,10 +420,71 @@ namespace ExamManager
             }
         }
 
-        private void closeWindow(object sender, WindowEventArgs e)
+        private IntPtr WndProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr uIdSubclass, IntPtr dwRefData)
         {
-            _user32dll.RemoveTrayIcon();
+            const int WM_USER = 0x800;
+            const int WM_TRAYICON = WM_USER;
+
+            if (msg == WM_TRAYICON)
+            {
+                // lParam contains mouse event: https://docs.microsoft.com/en-us/windows/win32/shell/shell-tray-notification-messages
+                int mouseMsg = (int)lParam;
+                if (mouseMsg == 0x0203 || mouseMsg == 0x0201) // WM_LBUTTONDBLCLK or WM_LBUTTONDOWN
+                {
+                    // Restore the window if minimized or hidden
+                    ShowWindow(hwnd, SW_RESTORE);
+                    SetForegroundWindow(hwnd);
+                } else if (mouseMsg == 0x0204)
+                {
+                    ShowContextMenu(hwnd);
+                }
+            }
+
+            return DefSubclassProc(hwnd, msg, wParam, lParam);
         }
+
+        private void ShowContextMenu(IntPtr hwnd)
+        {
+            IntPtr hMenu = CreatePopupMenu();
+
+            AppendMenu(hMenu, 0, 1000, "Open");
+            AppendMenu(hMenu, 0, 1001, "Exit");
+            AppendMenu(hMenu, 0, 1002, "Logout");
+            AppendMenu(hMenu, 1, 1003, $"Exam Manager ~ {DateTime.Now.Year}");
+
+            // Get current cursor position
+            GetCursorPos(out POINT pt);
+
+            // Set the foreground window to prevent the menu from disappearing immediately
+            SetForegroundWindow(hwnd);
+
+            // Display the menu
+            uint selected = TrackPopupMenu(
+                hMenu,
+                TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+                pt.X,
+                pt.Y,
+                0,
+                hwnd,
+                IntPtr.Zero
+            );
+
+            if (selected == 1000)
+            {
+                ShowWindow(hwnd, SW_RESTORE);
+                SetForegroundWindow(hwnd);
+            }
+            else if (selected == 1001)
+            {
+                Application.Current.Exit();
+            } else if (selected == 1002)
+            {
+                this.signUserIn(false);
+            }
+        }
+
+
+        private delegate IntPtr HwndSourceHook(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr uIdSubclass, IntPtr dwRefData);
 
         private const int IDI_APPLICATION = 32512;
         private const int IMAGE_ICON = 1;
@@ -426,5 +498,44 @@ namespace ExamManager
         // call this if/when you want to destroy the icon (window closed, etc.)
         [DllImport("user32")]
         private static extern bool DestroyIcon(nint hIcon);
+
+        // Subclassing native methods
+        [DllImport("comctl32.dll", SetLastError = true)]
+        private static extern bool SetWindowSubclass(IntPtr hWnd, HwndSourceHook pfnSubclass, uint uIdSubclass, IntPtr dwRefData);
+
+        [DllImport("comctl32.dll", SetLastError = true)]
+        private static extern IntPtr DefSubclassProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        private const int SW_RESTORE = 9;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr CreatePopupMenu();
+
+        [DllImport("user32.dll")]
+        private static extern bool AppendMenu(IntPtr hMenu, uint uFlags, uint uIDNewItem, string lpNewItem);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern uint TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int nReserved, IntPtr hWnd, IntPtr prcRect);
+
+        private const uint TPM_LEFTALIGN = 0x0000;
+        private const uint TPM_RIGHTBUTTON = 0x0002;
+        private const uint TPM_RETURNCMD = 0x0100;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
     }
 }

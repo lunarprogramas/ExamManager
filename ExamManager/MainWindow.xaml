@@ -26,7 +26,7 @@
             <!-- Icon -->
             <Image Source="Assets/examManagerIcon.ico" Height="24" Width="24" VerticalAlignment="Center"/>
         </Grid>
-        
+
         <!--Signed Out Menu-->
         <ListView Visibility="Collapsed" SelectionMode="None" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="20" Name="signedOutMenu">
             <TextBlock Name="ClockSignedOutMenu" FontWeight="Bold" Foreground="AntiqueWhite" FontSize="70" Padding="1">00:00 AM/PM</TextBlock>
@@ -135,7 +135,7 @@
                 <TextBox Name="GetCandidateYear" Visibility="Visible" PlaceholderText="Examination year" HorizontalAlignment="Center"></TextBox>
                 <Grid Name="ExamHallGrid" ColumnSpacing="10" RowSpacing="10">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/> 
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>

@@ -14,8 +14,8 @@ namespace ExamManager.Modules.User
 {
     internal class User32Dll
     {
-        private const int WM_USER = 0x0400;
-        private const int WM_TRAYICON = WM_USER + 1;
+        private const int WM_USER = 0x800;
+        private const int WM_TRAYICON = WM_USER;
 
         private nint _hWnd;
         private NotifyIconData _notifyIconData;
