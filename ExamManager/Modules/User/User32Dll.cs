@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-// This script handles all the tray icon stuff
+// retired service (deprecated)
 
 namespace ExamManager.Modules.User
 {
